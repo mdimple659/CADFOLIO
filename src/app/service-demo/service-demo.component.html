@@ -1,0 +1,74 @@
+<div style="margin: 10px;">
+    <button type="button" style="margin-right: 10px;" class="btn btn-primary mr-2" (click)="showPost=true;showUser=false">Display Posts</button>
+    <button type="button" class="btn btn-primary" (click)="showUser=true;showPost=false">Display Users</button>
+</div>
+<div style="margin: 10px;" *ngIf="showPost">
+    <div style="margin-bottom: 10px;" *ngIf="selectedPost"> 
+        <button type="button" class="btn btn-danger" (click)="deletePost()">Delete Posts</button>
+    </div>
+    <p-table #postTable [columns]="cols" [value]='loadedPosts' [paginator]="true" [rows]="10" selectionMode="single" 
+        [(selection)]="selectedPost" (onRowSelect)="getRowData($event.data)">
+        <ng-template pTemplate="caption">
+            List of posts
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns">
+                    {{col.header}}
+                </th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                    <input pInputText type="text" (input)="postTable.filter($event.target.value, col.field, col.filterMatchMode)" [value]="postTable.filters[col.field]?.value">
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+                <td *ngFor="let col of columns">
+                    {{rowData[col.field]}}
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<div style="margin: 10px;" *ngIf="showUser">
+    <p-table #usersTable [columns]="userCols" [value]='loadedUsers' [paginator]="true" [rows]="10" [autoLayout]="true">
+        <ng-template pTemplate="caption">
+            List of users
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns">
+                    {{col.header}}
+                </th>
+                <th>Address</th>
+                <th>Company</th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" >
+                    <input pInputText type="text" (input)="usersTable.filter($event.target.value, col.field, col.filterMatchMode)" [value]="usersTable.filters[col.field]?.value">
+                </th>
+                <th>
+                    <input pInputText type="text" (input)="usersTable.filter($event.target.value, 'address', col.filterMatchMode)" [value]="usersTable.filters['address']?.value">
+                </th>
+                <th>
+                    <input pInputText type="text" (input)="usersTable.filter($event.target.value, 'company', col.filterMatchMode)" [value]="usersTable.filters['company']?.value">
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+                <td *ngFor="let col of columns">
+                    {{rowData[col.field]}}
+                </td>
+                <td>
+                    {{rowData.address.suite}}, {{ rowData.address.city }}, {{rowData.address.zipcode}}, 
+                    {{rowData.address.geo.lat}}, {{rowData.address.geo.lat}}
+                </td>
+                <td>{{ rowData.company.name }}, {{ rowData.company.bs }}, {{ rowData.company.catchPhrase }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
